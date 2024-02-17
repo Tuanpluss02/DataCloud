@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from controllers.auth_controller import router as auth_router
-from controllers.db_controller import router as db_router
+from controllers.container_controller import router as db_router
 
 app = FastAPI()
 
