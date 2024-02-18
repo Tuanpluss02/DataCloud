@@ -1,0 +1,18 @@
+from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    access_token_secret_key: str
+    refresh_token_secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int
+    refresh_token_expire_minutes: int
+    mongodb_url: str
+    mongodb_name: str
+    model_config = SettingsConfigDict(env_file=".env")
+    
+
+@lru_cache
+def get_settings():
+    return Settings()

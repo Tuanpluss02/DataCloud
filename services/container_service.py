@@ -1,4 +1,3 @@
-
 from http.client import BAD_REQUEST
 from fastapi import HTTPException
 from models.database_type import Database, DatabaseType
@@ -31,14 +30,13 @@ class ContainerService:
             container = client.containers.get(container_name)
             container.stop()
             container.remove()
-            return {"message": f"Container deleted for user: {username}"}
         except docker.errors.NotFound:
-            return {"message": f"Container not found for user: {username}"}
-        
+            raise HTTPException(status_code=BAD_REQUEST, detail=f"Database {database_type} not found for user: {username}")
+        return {"message": f"Container deleted for user: {username}"}
+    
     def list_containers(username: str):
         containers = client.containers.list(all=True, filters={"name": f"{username}_"})
         return {"containers": [container.name for container in containers]}
-
 
 
 

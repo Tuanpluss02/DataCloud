@@ -3,9 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# mongodb docker volumes
+data/
+
 # C extensions
 *.so
-
+.vscode/
 # Distribution / packaging
 .Python
 build/

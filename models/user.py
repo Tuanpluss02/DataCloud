@@ -1,13 +1,19 @@
-from typing import Optional
 from pydantic import BaseModel
+
+from models.database_type import DatabaseType
 
 
 class User(BaseModel):
     username: str
-    hashed_password: str
-    salt: str
-    disabled: bool = False
+    disabled: bool | None = False
+    database_used: list[DatabaseType] | None = None
     
-    def __getitem__(self, key):
-        return self.__dict__[key]
+
+class UserInDB(User):
+    hashed_password: str
+    def to_dict(self):
+        return self.model_dump()
+    
+    
+
 
