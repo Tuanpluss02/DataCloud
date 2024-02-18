@@ -21,7 +21,9 @@ class ContainerService:
             host_port = container.attrs["NetworkSettings"]["Ports"][list(database.ports.keys())[0]][0]["HostPort"]
         except  docker.errors.APIError:
             raise HTTPException(status_code=BAD_REQUEST, detail=f"You already have a container for {database_type} database. Please delete it first.")
-        return {"message": f"Container created for user: {username}", "container_id": container.id, "host_port": host_port}
+        return {"message": f"Container created for user: {username}", 
+                "container_id": container.id,
+                "host_port": host_port}
     
     def delete_container(username: str, database_type: str):
         database = get_database_type(database_type)

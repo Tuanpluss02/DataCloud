@@ -12,4 +12,8 @@ def get_mongo_user_collection():
     db = get_mongo_db()
     return db.users
 
+def get_mongo_token_collection():
+    db = get_mongo_db()
+    return db.revoked_tokens
+
 

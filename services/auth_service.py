@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from models.token import token_type
 from models.user import UserInDB
 from repositories.auth_repository import AuthRepository
 
@@ -20,6 +21,8 @@ auth_repo = AuthRepository()
 class AuthServices:    
     def authenticate_user(username: str, password: str):
         user = auth_repo.get_user_from_db(username=username)
+        if not user:
+            raise HTTPException(status_code=401, detail="Incorrect username or password")
         if not verify_password(password, user.hashed_password):
             raise HTTPException(status_code=401, detail="Incorrect username or password")
         return user
@@ -36,10 +39,11 @@ class AuthServices:
         dbuser = UserInDB(**user)
         auth_repo.create_user(dbuser)
         return dbuser
-        
-        
-        
-        
     
-    
+    def logout_user(user: UserInDB):
+        auth_repo.revoke_token(user.username, token_type=token_type.ACCESS_TOKEN)
 
+        
+
+               
+    

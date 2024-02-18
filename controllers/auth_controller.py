@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from middlewares.vaidate_user import get_current_user
+from models.user import UserInDB
 
 from services.auth_service import AuthServices
 from utils.token import create_access_token, create_refresh_token
@@ -25,10 +26,11 @@ def user_register(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"} 
     
 @router.post("/logout")
-def logout_user(user : Annotated[str, Depends(get_current_user)]):
-    logging.info(f"User {user} logged out")
+def user_logout(user : Annotated[UserInDB, Depends(get_current_user)]):
+    AuthServices.logout_user(user)
     return {"message": "User Logged out successfully"}
 
 @router.get("/refresh")
-def refresh_token():
-    pass
+def refresh_token(user : Annotated[UserInDB, Depends(get_current_user)]):
+    access_token = create_access_token(data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}
