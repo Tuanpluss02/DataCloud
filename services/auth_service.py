@@ -40,8 +40,8 @@ class AuthServices:
         auth_repo.create_user(dbuser)
         return dbuser
     
-    def logout_user(user: UserInDB):
-        auth_repo.revoke_token(user.username, token_type=token_type.ACCESS_TOKEN)
+    def logout_user(token: str):
+        auth_repo.revoke_token(token, token_type=token_type.ACCESS_TOKEN)
 
         
 

@@ -1,7 +1,10 @@
 import logging
-from fastapi import FastAPI
+import time
+from fastapi import FastAPI, Request
 from controllers import router as api_router
 import uvicorn
+
+
 
 from utils.database_config import get_mongo_db
 
@@ -26,9 +29,8 @@ def startup_event():
             logging.error(e)
             raise Exception("Error creating collection")
 
-
 app = FastAPI(on_startup=[startup_event])
 app.include_router(api_router)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=80)

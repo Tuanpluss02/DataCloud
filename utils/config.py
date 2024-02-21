@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     refresh_token_expire_minutes: int
     mongodb_url: str
     mongodb_name: str
+    fernet_key: str
+    digitalocean_key: str
     model_config = SettingsConfigDict(env_file=".env")
     
 

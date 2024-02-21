@@ -1,7 +1,6 @@
 from enum import Enum
 
-
-class Database:
+class Database():
     image: str
     environment: dict
     ports: dict
@@ -11,6 +10,15 @@ class Database:
         self.ports = ports
     def __getitem__(self, key):
         return self.__dict__[key]
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+        
+    def change_password(self, new_password):
+        for key in self.environment.keys():
+            if "PASSWORD" in key.upper():
+                self.environment[key] = new_password
+                break
+    
 
 class DatabaseType(Enum):
     MYSQL = Database(
@@ -40,5 +48,12 @@ class DatabaseType(Enum):
         environment={},
         ports={"6379/tcp": None}
     )
+    KAFKA = Database(
+        image="ubuntu/kafka:latest",
+        environment={},
+        ports={"9092/tcp": None}
+    )
     def __getitem__(self, key):
         return self.__dict__[key]
+    
+
