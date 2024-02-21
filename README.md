@@ -14,11 +14,11 @@ To get started with the Cloud Database Creation Service, follow these steps:
 
 1. Clone the repository:
    ```shell
-   git clone https://github.com/Tuanpluss02/DataCloud.git
+    > git clone https://github.com/Tuanpluss02/DataCloud.git
    ```
 2. Create a vitural environment:
     ```shell
-    python -m venv venv
+    > python -m venv venv
     ```
 3. Configure the service:
     Rename the `.env.example` to  `.env` and modify the necessary settings, such as database credentials, Docker configuration, etc.
