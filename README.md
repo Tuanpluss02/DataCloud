@@ -1,13 +1,14 @@
 # Cloud Database Creation Service
 
-This is a service that allows you to easily create and manage cloud databases. It utilizes the power of FastAPI and Docker API to provide a reliable and efficient solution for your database needs.
+This is a service that allows you to easily create and manage cloud databases. It utilizes the power of FastAPI, Docker API and Digital Ocean API to provide a reliable and efficient solution for your database needs.
 
 ## Features
 
 - **Easy Database Creation**: With this service, you can quickly create cloud databases without the hassle of manual setup. Just provide the necessary details, and the service will handle the rest.
 - **FastAPI Integration**: The service is built using FastAPI, a modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints. FastAPI ensures quick response times and efficient handling of requests.
 - **Docker API**: Docker is an open platform for developing, shipping, and running applications. This service leverages Docker API to manage the database containers, making it easy to deploy and scale your databases.
-
+- **Digital Ocean API**: Digital Ocean API is a powerful tool that allows interact with and manage  Digital Ocean resources programmatically.
+  
 ## Getting Started
 
 To get started with the Cloud Database Creation Service, follow these steps:
