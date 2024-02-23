@@ -34,26 +34,63 @@ class ContainerService:
             raise HTTPException(status_code=BAD_REQUEST, detail=f"You already have a container for {database_type} database. Please delete it first.")
         return {
             "message": f"Container created for user: {username}", 
-                "database_type": database_type,
-                "host_ip": get_ip_address(),
-                "host_port": host_port,
-                "environment": database.environment,
+            "container":{
+                "id": container.short_id,
+                "name": container.name,
+                "image": container.image.tags[0],
+                "status": container.status,
+                "host": get_ip_address(),
+                "port": host_port,
+                "enviroment": database.environment,
+                }
             }
-    
-    def delete_container(username: str, database: Database):
-        database_type = database.image.split(':')[0].lower()
+        
+    def get_container(username: str, container_id: str):
         try: 
-            container_name = f"{username}_{database.image.split(':')[0].lower()}_container"
-            container = client.containers.get(container_name)
+            container = client.containers.get(container_id)
+            container.reload()
+        except docker.errors.NotFound:
+            raise HTTPException(status_code=BAD_REQUEST, detail=f"Container {container_id} not found for user: {username}")
+        except Exception as e:
+            logging.error(e)
+            raise HTTPException(status_code=BAD_REQUEST, detail=f"An error occured while trying to get container {container_id} for user: {username}")
+        return {
+            "user": username,
+            "container": {
+                "id": container.short_id,
+                "name": container.name,
+                "image": container.image.tags[0],
+                "status": container.status,
+                "host": get_ip_address(),
+                "port": container.attrs["NetworkSettings"]["Ports"][list(container.ports.keys())[0]][0]["HostPort"] if container.status == "running" else None,
+                "enviroment": container.attrs["Config"]["Env"]
+            }
+        }
+    
+    def delete_container(username: str, container_id: str):
+        try: 
+            container = client.containers.get(container_id)
             container.stop()
             container.remove()
         except docker.errors.NotFound:
-            raise HTTPException(status_code=BAD_REQUEST, detail=f"Database {database_type} not found for user: {username}")
-        return {"message": f"Database {database_type} deleted for user: {username}"}
+            raise HTTPException(status_code=BAD_REQUEST, detail=f"Container {container_id} not found for user: {username}")
+        return {"message": f"Container {container_id} deleted for user: {username}"}
     
     def list_containers(username: str):
         containers = client.containers.list(all=True, filters={"name": f"{username}_"})
-        return {"containers": [container.name for container in containers]}
+        return {
+            "user": username,
+            "contaniner_count": len(containers),
+            "containers": [{"id": container.short_id, "name": container.name,"image": container.image.tags[0] , "status": container.status} for container in containers]
+        }
+    def list_running_containers(username: str):
+        containers = client.containers.list(filters={"name": f"{username}_"})
+        return {
+            "user": username,
+            "contaniner_count": len(containers),
+            "containers": [{"id": container.short_id, "name": container.name,"image": container.image.tags[0] , "status": container.status} for container in containers]
+        }
+    
 
 
 

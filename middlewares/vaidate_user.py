@@ -23,7 +23,7 @@ def get_current_user(http_authorization_credentials=Depends(reusable_oauth2)) ->
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except JWTError:
+    except Exception as e:
         raise credentials_exception
     user: UserInDB = auth_repo.get_user_from_db(username=username)
     if user is None:
