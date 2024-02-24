@@ -1,4 +1,3 @@
-import logging
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -12,21 +11,23 @@ from utils.token import create_access_token, create_refresh_token
 
 router = APIRouter()
 
+
 @router.post("/login")
 def user_login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     verify_auth_request(form_data)
     user = AuthServices.authenticate_user(form_data.username, form_data.password)
     access_token = create_access_token(data={"sub": user.username})
     refresh_token = create_refresh_token(data={"sub": user.username})
-    
+
     response_data = {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }
-    
+
     return JSONResponse(status_code=200, content=response_data)
-    
+
+
 @router.post("/register")
 def user_register(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     verify_auth_request(form_data)
@@ -35,21 +36,25 @@ def user_register(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     refresh_token = create_refresh_token(data={"sub": user.username})
     return JSONResponse(
         status_code=200,
-        content={"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
-        )
-    
+        content={
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+        },
+    )
+
+
 @router.post("/logout")
-def user_logout(token : Annotated[str, Depends(get_token)]):
+def user_logout(token: Annotated[str, Depends(get_token)]):
     AuthServices.logout_user(token)
     return JSONResponse(
-        status_code=200,
-        content={"message": "User logged out successfully"}
-        )
+        status_code=200, content={"message": "User logged out successfully"}
+    )
+
 
 @router.get("/refresh")
-def refresh_token(user : Annotated[UserInDB, Depends(get_current_user)]):
+def refresh_token(user: Annotated[UserInDB, Depends(get_current_user)]):
     access_token = create_access_token(data={"sub": user.username})
     return JSONResponse(
-        status_code=200,
-        content={"access_token": access_token, "token_type": "bearer"}
-        )
+        status_code=200, content={"access_token": access_token, "token_type": "bearer"}
+    )

@@ -1,18 +1,14 @@
-
-import json
-import time
-from fastapi import HTTPException
 from utils.config import Settings
-from utils.gen_pass import generate_password
 
 settings = Settings()
 
-def get_payload_request(username :str, database_type:str):
+
+def get_payload_request(username: str, database_type: str):
     db_engine_map = {
-        'mysql': 'mysql',
-        'postgres': 'pg',
-        'mongo': 'mongodb',
-        'redis': 'redis',
+        "mysql": "mysql",
+        "postgres": "pg",
+        "mongo": "mongodb",
+        "redis": "redis",
     }
     db_version_map = {
         "mysql": "8",
@@ -21,16 +17,15 @@ def get_payload_request(username :str, database_type:str):
         "redis": "7",
     }
     return {
-    "name": f"{username}-{database_type}-database",
-    "engine": db_engine_map.get(database_type),
-    "version": db_version_map.get(database_type),
-    "region": "sgp1",
-    "size": "db-s-1vcpu-1gb",
-    "num_nodes": 1,
-    "tags": [
-        "production"
-    ]
-}
+        "name": f"{username}-{database_type}-database",
+        "engine": db_engine_map.get(database_type),
+        "version": db_version_map.get(database_type),
+        "region": "sgp1",
+        "size": "db-s-1vcpu-1gb",
+        "num_nodes": 1,
+        "tags": ["production"],
+    }
+
 
 def extract_database_info(response_json):
     important_details = {
@@ -47,8 +42,8 @@ def extract_database_info(response_json):
                 "port": response_json["database"]["connection"]["port"],
                 "user": response_json["database"]["connection"]["user"],
                 "password": response_json["database"]["connection"]["password"],
-                "ssl": response_json["database"]["connection"]["ssl"]
-            }
+                "ssl": response_json["database"]["connection"]["ssl"],
+            },
         }
     }
     return important_details

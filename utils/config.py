@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     digitalocean_key: str
     digitalocean_ssh_key: str
     model_config = SettingsConfigDict(env_file=".env")
-    
+
 
 @lru_cache
 def get_settings():
