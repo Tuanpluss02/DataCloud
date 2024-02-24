@@ -1,8 +1,10 @@
 
 import time
 from fastapi import HTTPException
+from utils.config import Settings
 from utils.gen_pass import generate_password
 
+settings = Settings()
 
 def get_user_data(username: str, database_type: str, default_password: str):
     user_data_map = {
@@ -29,8 +31,10 @@ def get_user_data(username: str, database_type: str, default_password: str):
         "mongo": f"""
         - apt-get update
         - apt-get install -y mongodb
-        - systemctl start mongodb
+        - sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/g' /etc/mongod.conf
+        - systemctl restart mongodb
         - systemctl enable mongodb
+        - ufw allow 27017
         - mongo --eval 'db.createUser({{user:"{username}",pwd:"{default_password}",roles:[{{role:"readWrite",db:"{username}_mongo"}}]}});'
         """,
         "redis": f"""
@@ -55,6 +59,7 @@ def get_payload_request(username :str, database_type:str, default_password:str):
         "size": "s-1vcpu-1gb",
         "image": "ubuntu-20-04-x64",
         "backups": False,
+        "ssh_keys": [settings.digitalocean_ssh_key],
         "ipv6": True,
         "user_data": f"""#cloud-config
 runcmd:

@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     mongodb_name: str
     fernet_key: str
     digitalocean_key: str
+    digitalocean_ssh_key: str
     model_config = SettingsConfigDict(env_file=".env")
     
 
