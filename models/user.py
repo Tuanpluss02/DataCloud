@@ -6,7 +6,8 @@ from models.database_type import DatabaseType
 class User(BaseModel):
     username: str
     disabled: bool | None = False
-    database_used: list[DatabaseType] | None = None
+    containers: list[str] | None = []
+    droplets: list[str] | None = []
 
 
 class UserInDB(User):

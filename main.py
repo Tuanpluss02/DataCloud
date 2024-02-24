@@ -26,7 +26,6 @@ def startup_event():
             logging.error(e)
             raise Exception("Error creating collection")
 
-
 app = FastAPI(on_startup=[startup_event])
 app.include_router(api_router)
 

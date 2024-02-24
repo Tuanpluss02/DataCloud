@@ -17,7 +17,7 @@ def create_container(
     database: Database = get_database_instance(
         database_type=database_type, database_list=DatabaseType
     )
-    response = ContainerService.create_container(user.username, database)
+    response = ContainerService.create_container(user, database)
     return JSONResponse(status_code=201, content=response)
 
 
@@ -25,7 +25,7 @@ def create_container(
 def delete_container(
     container_id: str, user: Annotated[UserInDB, Depends(get_current_user)]
 ):
-    response = ContainerService.delete_container(user.username, container_id)
+    response = ContainerService.delete_container(user, container_id)
     return JSONResponse(status_code=200, content=response)
 
 
@@ -33,11 +33,11 @@ def delete_container(
 def get_container(
     container_id: str, user: Annotated[UserInDB, Depends(get_current_user)]
 ):
-    response = ContainerService.get_container(user.username, container_id)
+    response = ContainerService.get_container(user, container_id)
     return JSONResponse(status_code=200, content=response)
 
 
 @router.get("")
 def list_containers(user: Annotated[UserInDB, Depends(get_current_user)]):
-    response = ContainerService.list_containers(user.username)
+    response = ContainerService.list_containers(user)
     return JSONResponse(status_code=200, content=response)

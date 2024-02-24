@@ -13,13 +13,13 @@ router = APIRouter()
 def create_droplet(
     user: Annotated[UserInDB, Depends(get_current_user)], database_type: str
 ):
-    response = DropletService.create_droplet(user.username, database_type)
+    response = DropletService.create_droplet(user, database_type)
     return JSONResponse(status_code=201, content=response)
 
 
 @router.get("/{droplet_id}")
 def get_droplet(user: Annotated[UserInDB, Depends(get_current_user)], droplet_id: str):
-    response = DropletService.get_droplet(droplet_id)
+    response = DropletService.get_droplet(user, droplet_id)
     return JSONResponse(status_code=200, content=response)
 
 
@@ -27,5 +27,5 @@ def get_droplet(user: Annotated[UserInDB, Depends(get_current_user)], droplet_id
 def delete_droplet(
     user: Annotated[UserInDB, Depends(get_current_user)], droplet_id: str
 ):
-    response = DropletService.delete_droplet(droplet_id)
+    response = DropletService.delete_droplet(user, droplet_id)
     return JSONResponse(status_code=200, content=response)
