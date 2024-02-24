@@ -19,3 +19,25 @@ def create_droplet(
         status_code=201,
         content=response
     )
+
+@router.get("/{droplet_id}")
+def get_droplet(
+    user : Annotated[UserInDB, Depends(get_current_user)],
+    droplet_id:str
+    ):
+    response = DropletService.get_droplet(droplet_id)
+    return JSONResponse(
+        status_code=200,
+        content=response
+    )
+
+@router.delete("/{droplet_id}")
+def delete_droplet(
+    user : Annotated[UserInDB, Depends(get_current_user)],
+    droplet_id:str
+    ):
+    response = DropletService.delete_droplet(droplet_id)
+    return JSONResponse(
+        status_code=200,
+        content=response
+    )   

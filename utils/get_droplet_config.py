@@ -1,4 +1,5 @@
 
+import json
 import time
 from fastapi import HTTPException
 from utils.config import Settings
@@ -6,86 +7,48 @@ from utils.gen_pass import generate_password
 
 settings = Settings()
 
-def get_user_data(username: str, database_type: str, default_password: str):
-    user_data_map = {
-        "mysql": f"""
-        - export DEBIAN_FRONTEND=noninteractive
-        - echo "mysql-server mysql-server/root_password password {default_password}" | debconf-set-selections
-        - echo "mysql-server mysql-server/root_password_again password {default_password}" | debconf-set-selections
-        - apt-get update
-        - apt-get install -y mysql-server
-        - systemctl start mysql
-        - systemctl enable mysql
-        - mysql -uroot -p{default_password} -e "CREATE USER '{username}'@'%' IDENTIFIED BY 'actual_password';"
-        - mysql -uroot -p{default_password} -e "GRANT ALL PRIVILEGES ON *.* TO '{username}'@'%' WITH GRANT OPTION;"
-        - mysql -uroot -p{default_password} -e "FLUSH PRIVILEGES;"
-        """,
-        "postgres": f"""
-        - apt-get update
-        - apt-get install -y postgresql postgresql-contrib
-        - systemctl start postgresql
-        - systemctl enable postgresql
-        - sudo -u postgres psql -c "CREATE USER {username} WITH PASSWORD '{default_password}';"
-        - sudo -u postgres psql -c "ALTER USER {username} CREATEDB;"
-        """,
-        "mongo": f"""
-        - apt-get update
-        - apt-get install -y mongodb
-        - sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/g' /etc/mongod.conf
-        - systemctl restart mongodb
-        - systemctl enable mongodb
-        - ufw allow 27017
-        - mongo --eval 'db.createUser({{user:"{username}",pwd:"{default_password}",roles:[{{role:"readWrite",db:"{username}_mongo"}}]}});'
-        """,
-        "redis": f"""
-        - apt-get update
-        - apt-get install -y redis-server
-        - systemctl start redis-server
-        - systemctl enable redis-server
-        """,
-        "kafka": """
-        - echo "deb [arch=amd64] http://repo.confluent.io/deb/5.5 stable main" | tee /etc/apt/sources.list.d/confluent.list
-        - wget -qO - http://packages.confluent.io/deb/5.5/archive.key | apt-key add -
-        - apt-get update && apt-get install -y confluent-community-2.12
-        """
+def get_payload_request(username :str, database_type:str):
+    db_engine_map = {
+        'mysql': 'mysql',
+        'postgres': 'pg',
+        'mongo': 'mongodb',
+        'redis': 'redis',
     }
-    return user_data_map.get(database_type)
-
-def get_payload_request(username :str, database_type:str, default_password:str):
-    user_data =  get_user_data(username=username, database_type=database_type, default_password=default_password)
-    return {
-        "name": f"{username}-{database_type}-droplet",
-        "region": "sgp1",
-        "size": "s-1vcpu-1gb",
-        "image": "ubuntu-20-04-x64",
-        "backups": False,
-        "ssh_keys": [settings.digitalocean_ssh_key],
-        "ipv6": True,
-        "user_data": f"""#cloud-config
-runcmd:
-{user_data}
-""",
-        "private_networking": None,
-        "volumes": None,
-        "tags": ["web"]
-    }
-
-def generate_droplet_response(username: str, database_type: str, default_password: str, ip_address: str, droplet_id: str):
-    database_port_map = {
-        "mysql": 3306,
-        "postgres": 5432,
-        "mongo": 27017,
-        "redis": 6379,
-        "kafka": 9092
+    db_version_map = {
+        "mysql": "8",
+        "postgres": "16",
+        "mongo": "6",
+        "redis": "7",
     }
     return {
-        "status": "success",
-        "detail": {
-            "droplet_id": droplet_id,
-            "username": username,
-            "default_password": default_password if database_type in ["mysql", "postgres", "mongo"] else None,
-            "database_type": database_type,
-            "ip_address": ip_address,
-            "port": database_port_map.get(database_type)
+    "name": f"{username}-{database_type}-database",
+    "engine": db_engine_map.get(database_type),
+    "version": db_version_map.get(database_type),
+    "region": "sgp1",
+    "size": "db-s-1vcpu-1gb",
+    "num_nodes": 1,
+    "tags": [
+        "production"
+    ]
+}
+
+def extract_database_info(response_json):
+    important_details = {
+        "database": {
+            "id": response_json["database"]["id"],
+            "name": response_json["database"]["name"],
+            "engine": response_json["database"]["engine"],
+            "version": response_json["database"]["version"],
+            "status": response_json["database"]["status"],
+            "connection": {
+                "protocol": response_json["database"]["connection"]["protocol"],
+                "uri": response_json["database"]["connection"]["uri"],
+                "host": response_json["database"]["connection"]["host"],
+                "port": response_json["database"]["connection"]["port"],
+                "user": response_json["database"]["connection"]["user"],
+                "password": response_json["database"]["connection"]["password"],
+                "ssl": response_json["database"]["connection"]["ssl"]
+            }
         }
     }
+    return important_details
