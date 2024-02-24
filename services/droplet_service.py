@@ -41,6 +41,20 @@ class DropletService:
         except Exception as e:
             raise HTTPException(status_code=response.status_code, detail=e.__dict__)
 
+    def get_all_droplets(user: UserInDB):
+        if len(user.droplets) == 0:
+            return {"message": "No databases found"}
+        try:
+            response = []
+            for droplet_id in user.droplets:
+                response.append(
+                    extract_database_info(
+                        requests.get(f"{DIGITALOCEAN_API_URL}/{droplet_id}", headers=headers).json()
+                    )
+                )
+        except Exception as e:
+            raise HTTPException(status_code=response.status_code, detail=e.__dict__)
+
     def get_droplet( user: UserInDB,droplet_id: str):
         if droplet_id not in user.droplets:
             raise HTTPException(

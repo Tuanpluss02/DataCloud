@@ -16,6 +16,10 @@ def create_droplet(
     response = DropletService.create_droplet(user, database_type)
     return JSONResponse(status_code=201, content=response)
 
+@router.get("")
+def get_all_droplets(user: Annotated[UserInDB, Depends(get_current_user)]):
+    response = DropletService.get_all_droplets(user)
+    return JSONResponse(status_code=200, content=response)
 
 @router.get("/{droplet_id}")
 def get_droplet(user: Annotated[UserInDB, Depends(get_current_user)], droplet_id: str):

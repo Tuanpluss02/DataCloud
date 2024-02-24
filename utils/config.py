@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
     refresh_token_expire_minutes: int
-    mongodb_url: str
+    mongodb_uri: str
     mongodb_name: str
     fernet_key: str
     digitalocean_key: str

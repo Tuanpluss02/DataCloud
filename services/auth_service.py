@@ -3,16 +3,18 @@ from fastapi import HTTPException
 from models.token import token_type
 from models.user import UserInDB
 from repositories.auth_repository import AuthRepository
+from repositories.user_repository import UserRepository
 
 from utils.password_ecrypt import get_password_hash, verify_password
 
 
 auth_repo = AuthRepository()
+user_repo = UserRepository()
 
 
 class AuthServices:
     def authenticate_user(username: str, password: str):
-        user = auth_repo.get_user_from_db(username=username)
+        user = user_repo.get_user_by_username(username=username)
         if not user:
             raise HTTPException(
                 status_code=401, detail="Incorrect username or password"
@@ -24,7 +26,7 @@ class AuthServices:
         return user
 
     def register_user(username: str, password: str):
-        is_existing_user = auth_repo.get_user_from_db(username)
+        is_existing_user = user_repo.get_user_by_username(username)
         if is_existing_user:
             raise HTTPException(
                 status_code=400, detail=f"User {username} already exists"
@@ -35,7 +37,7 @@ class AuthServices:
         user["hashed_password"] = hashed_password
         user["database_used"] = []
         dbuser = UserInDB(**user)
-        auth_repo.create_user(dbuser)
+        user_repo.create_user(dbuser)
         return dbuser
 
     def logout_user(token: str):

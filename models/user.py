@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-from models.database_type import DatabaseType
 
 
 class User(BaseModel):
