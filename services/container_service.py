@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from models.database_type import Database
 import docker
 from models.user import UserInDB
+from repositories.user_repository import UserRepository
 
 from utils.config import get_settings
 from utils.get_ip import get_ip_address
@@ -11,7 +12,7 @@ from utils.gen_pass import generate_password
 
 client = docker.from_env()
 settings = get_settings()
-
+user_repo = UserRepository()
 
 class ContainerService:
     def create_container(user: UserInDB, database: Database):
@@ -39,7 +40,7 @@ class ContainerService:
                 detail=f"You already have a container for {database_type} database. Please delete it first.",
             )
         user.containers.append(container.short_id)
-        user.save()
+        user_repo.update_user(user)
         return {
             "message": f"Container created for user: {user.username}",
             "container": {
@@ -103,7 +104,7 @@ class ContainerService:
             container.stop()
             container.remove()
             user.containers.remove(container_id)
-            user.save()
+            user_repo.update_user(user)
         except docker.errors.NotFound:
             raise HTTPException(
                 status_code=BAD_REQUEST,
