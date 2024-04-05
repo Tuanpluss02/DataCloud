@@ -21,19 +21,12 @@ class UserRepository:
         except Exception as e:
             raise HTTPException(status_code=500, detail="Error creating user")
     
-    def add_new_container_to_user(self, user: UserInDB, container_id: str):
+    def update_user(self, user: UserInDB):
         try:
-            user.containers.append(container_id)
             self.db_user.update_one({"username": user.username}, {"$set": user.to_dict()})
         except Exception as e:
             raise HTTPException(status_code=400, detail="Error adding container to user")
-    
-    def add_new_droplet_to_user(self, user: UserInDB, droplet_id: str):
-        try:
-            user.droplets.append(droplet_id)
-            self.db_user.update_one({"username": user.username}, {"$set": user.to_dict()})
-        except Exception as e:
-            raise HTTPException(status_code=400, detail="Error adding droplet to user")
+
         
     def get_user_by_username(self, username: str) -> UserInDB | None:
         try:

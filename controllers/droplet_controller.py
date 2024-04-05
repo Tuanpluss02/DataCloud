@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+from controllers.verify_request.new_droplet_request import validate_new_droplet_request
 from middlewares.vaidate_user import get_current_user
 from models.user import UserInDB
 from services.droplet_service import DropletService
@@ -13,6 +14,7 @@ router = APIRouter()
 def create_droplet(
     user: Annotated[UserInDB, Depends(get_current_user)], database_type: str
 ):
+    database_type = validate_new_droplet_request(database_type)
     response = DropletService.create_droplet(user, database_type)
     return JSONResponse(status_code=201, content=response)
 
