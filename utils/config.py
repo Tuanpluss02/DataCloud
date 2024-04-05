@@ -8,13 +8,13 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
     refresh_token_expire_minutes: int
-    mongodb_uri: str
+    mongodb_url: str
     mongodb_name: str
     fernet_key: str
     digitalocean_key: str
     digitalocean_ssh_key: str
     model_config = SettingsConfigDict(env_file=".env")
-
+    
 
 @lru_cache
 def get_settings():

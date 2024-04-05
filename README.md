@@ -24,7 +24,6 @@ To get started with the Cloud Database Creation Service, follow these steps:
     Rename the `.env.example` to  `.env` and modify the necessary settings, such as database credentials, Docker configuration, etc.
 4. Start the service:
     ```shell 
-    > docker compose up -d
     > uvicorn main:app --reload
     ```
 ## API Documentation
