@@ -13,6 +13,7 @@ user_repo = UserRepository()
 
 
 class AuthServices:
+    @staticmethod
     def authenticate_user(username: str, password: str):
         user = user_repo.get_user_by_username(username=username)
         if not user:
