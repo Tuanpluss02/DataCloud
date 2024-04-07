@@ -41,7 +41,7 @@ def extract_database_info(response_json):
                 "host": response_json["database"]["connection"]["host"],
                 "port": response_json["database"]["connection"]["port"],
                 "user": response_json["database"]["connection"]["user"],
-                "password": response_json["database"]["connection"]["password"],
+                "password": response_json["database"]["connection"]["password"] if response_json["database"]["engine"] != "mongodb" else "None",
                 "ssl": response_json["database"]["connection"]["ssl"],
             },
         }

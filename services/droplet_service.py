@@ -48,8 +48,9 @@ class DropletService:
                         requests.get(f"{DIGITALOCEAN_API_URL}/{droplet_id}", headers=headers).json()
                     )
                 )
+            return response
         except Exception as e:
-            raise HTTPException(status_code=response.status_code, detail=e.__dict__)
+            raise HTTPException(status_code=500, detail=e.__dict__)
 
     def get_droplet( user: UserInDB,droplet_id: str):
         if droplet_id not in user.droplets:
