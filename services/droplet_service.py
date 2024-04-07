@@ -48,6 +48,8 @@ class DropletService:
                         requests.get(f"{DIGITALOCEAN_API_URL}/{droplet_id}", headers=headers).json()
                     )
                 )
+            for db in response:
+                db["database"].pop("connection")
             return response
         except Exception as e:
             raise HTTPException(status_code=500, detail=e.__dict__)
