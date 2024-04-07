@@ -3,20 +3,21 @@ from fastapi import HTTPException
 from pymongo import MongoClient
 import pymongo
 from .config import get_settings
+from pymongo.server_api import ServerApi
 
+settings = get_settings()
 class MongoManager:
     client: MongoClient = None
-    settings = get_settings()
 
     @classmethod
     def get_client(cls):
         if cls.client is None:
-            cls.client = MongoClient(cls.settings.mongodb_uri)
+            cls.client = MongoClient(settings.mongodb_url, server_api=ServerApi('1'))
         return cls.client
 
     @classmethod
     def get_database(cls):
-        return cls.get_client()[cls.settings.mongodb_name]
+        return cls.get_client()[settings.mongodb_name]
 
     @classmethod
     def get_user_collection(cls):
@@ -31,7 +32,6 @@ class MongoManager:
     @classmethod
     def initialize_collections(cls):
         db = cls.get_database()
-        logging.warn(db.list_collection_names())
         cls.initialize_collection(db, "users", "username")
         cls.initialize_collection(db, "revoked_tokens", "token")
 

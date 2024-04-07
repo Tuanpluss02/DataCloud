@@ -4,7 +4,7 @@ from controllers.container_controller import router as container_router
 from controllers.droplet_controller import router as droplet_router
 
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1")
 router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 router.include_router(
     container_router, prefix="/container", tags=["Docker Container Management"]
