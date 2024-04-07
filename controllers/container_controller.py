@@ -28,7 +28,7 @@ def create_container(
     )
 
 
-@router.delete("{container_id}")
+@router.delete("/{container_id}")
 def delete_container(  request: Request,
     container_id: str, user: Annotated[UserInDB, Depends(get_current_user)]
 ):
@@ -41,7 +41,7 @@ def delete_container(  request: Request,
     )
 
 
-@router.get("{container_id}")
+@router.get("/{container_id}")
 def get_container(  request: Request,
     container_id: str, user: Annotated[UserInDB, Depends(get_current_user)]
 ):
